@@ -3,7 +3,6 @@
 namespace Encrypter\Command;
 
 use Consolly\Command\Command;
-use Encrypter\Option\HelpOption;
 
 class DefaultCommand extends Command
 {
@@ -22,7 +21,6 @@ class DefaultCommand extends Command
     public function getOptions(): array
     {
         return [
-            "help" => new HelpOption()
         ];
     }
 

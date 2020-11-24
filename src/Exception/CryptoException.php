@@ -4,7 +4,7 @@ namespace Encrypter\Exception;
 
 use Exception;
 
-class EncryptionException extends Exception
+class CryptoException extends Exception
 {
 
 }

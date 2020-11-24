@@ -3,45 +3,33 @@
 namespace Encrypter\Command\Decrypt;
 
 use Consolly\Command\Command;
+use Consolly\IO\Output\Out;
+use Encrypter\Command\CryptoCommand;
+use Encrypter\Option\AlgorithmOption;
+use Encrypter\Option\AvailableAlgorithmOption;
 use Encrypter\Option\FileOption;
 use Encrypter\Option\PasswordOption;
 
-class DecryptCommand extends Command
+class DecryptCommand extends CryptoCommand
 {
-
-    /**
-     * @inheritDoc
-     */
     public function getName(): string
     {
-        return "decrypt";
+        return 'decrypt';
     }
 
-    private PasswordOption $password;
-    private FileOption $file;
-
-    /**
-     * @inheritDoc
-     */
-    public function getOptions(): array
-    {
-        return [
-            $this->password,
-            $this->file
-        ];
-    }
-
-    public function __construct()
-    {
-        $this->password = new PasswordOption();
-        $this->file = new FileOption();
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function handle(array $nextArgs): void
     {
-        echo "decrypt command";
+        parent::handle($nextArgs);
+
+        Out::write(
+            $this->crypt(
+                true,
+                $this->algorithm->getValue(),
+                $this->getData($nextArgs),
+                $this->getPassword(),
+                $this->iv->getValue(),
+                $this->binary->isIndicated()
+            )
+        );
     }
 }

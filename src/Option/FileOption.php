@@ -46,8 +46,6 @@ class FileOption extends Option
      */
     public function setValue(string $value): void
     {
-        var_dump($value);
-
         if (!is_file($value))
         {
             throw new FileUnattainableException("value of option '--file' isn't a path to file or file not found");

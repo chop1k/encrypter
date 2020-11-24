@@ -2,9 +2,7 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
-
-class PasswordOption extends Option
+class IVOption extends \Consolly\Option\Option
 {
 
     /**
@@ -12,7 +10,7 @@ class PasswordOption extends Option
      */
     public function getName(): string
     {
-        return "password";
+        return 'iv';
     }
 
     /**
@@ -20,7 +18,7 @@ class PasswordOption extends Option
      */
     public function getAbbreviation(): ?string
     {
-        return "p";
+        return 'i';
     }
 
     /**
@@ -31,7 +29,7 @@ class PasswordOption extends Option
         return true;
     }
 
-    private string $value;
+    protected string $value;
 
     /**
      * @return string
@@ -46,7 +44,7 @@ class PasswordOption extends Option
      */
     public function setValue(string $value): void
     {
-        $this->value = $value;
+        $this->value = hash('md5', $value, true);
     }
 
     /**
@@ -54,10 +52,10 @@ class PasswordOption extends Option
      */
     public function isRequired(): bool
     {
-        return false;
+        return true;
     }
 
-    private bool $indicated;
+    protected bool $indicated;
 
     /**
      * @return bool
@@ -73,11 +71,5 @@ class PasswordOption extends Option
     public function setIndicated(bool $value): void
     {
         $this->indicated = $value;
-    }
-
-    public function __construct()
-    {
-        $this->indicated = false;
-        $this->value = false;
     }
 }
