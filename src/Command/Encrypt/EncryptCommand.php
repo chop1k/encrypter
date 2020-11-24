@@ -1,60 +1,75 @@
 <?php
 
-namespace Encrypter\Command;
+namespace Encrypter\Command\Hash\Encrypt;
 
 use Consolly\Argument\Argument;
 use Consolly\Command\Command;
 use Consolly\IO\Input\In;
 use Consolly\IO\Output\Out;
+use Encrypter\Exception\AlgorithmException;
+use Encrypter\Exception\EncryptionException;
 use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\AlgorithmOption;
 use Encrypter\Option\AvailableAlgorithmOption;
-use Encrypter\Option\BinaryOption;
 use Encrypter\Option\FileOption;
-use Encrypter\Option\SaltOption;
+use Encrypter\Option\PasswordOption;
 use InvalidArgumentException;
 
-class HashCommand extends Command
+class EncryptCommand extends Command
 {
 
-    /**
-     * @inheritDoc
-     */
     public function getName(): string
     {
-        return "hash";
+        return "encrypt";
     }
 
-    private AlgorithmOption $algorithm;
+    private PasswordOption $password;
     private FileOption $file;
-    private BinaryOption $binary;
-    private SaltOption $salt;
+    private AlgorithmOption $algorithm;
     private AvailableAlgorithmOption $available;
 
-    /**
-     * @inheritDoc
-     */
     public function getOptions(): array
     {
         return [
-            $this->algorithm,
+            $this->password,
             $this->file,
-            $this->binary,
-            $this->salt,
+            $this->algorithm,
             $this->available
         ];
     }
 
     public function __construct()
     {
+        $this->password = new PasswordOption();
+        $this->file = new FileOption();
+
         $this->algorithm = new AlgorithmOption();
 
-        $this->algorithm->setValue("sha256");
+        $this->algorithm->setRequired(false);
 
-        $this->file = new FileOption();
-        $this->binary = new BinaryOption();
-        $this->salt = new SaltOption();
         $this->available = new AvailableAlgorithmOption();
+    }
+
+    private function getPassword(): string
+    {
+        $password = null;
+
+        if ($this->password->isIndicated())
+        {
+            $password = $this->password->getValue();
+        }
+
+        if (is_null($password))
+        {
+            $password = readline('Password:');
+
+            if ($password === false)
+            {
+                throw new \Exception("password is required");
+            }
+        }
+
+        return $this->password->getValue();
     }
 
     private function getData(array $args): string
@@ -71,12 +86,13 @@ class HashCommand extends Command
             return $data;
         }
 
-        if (isset($args[1]))
+
+        if (isset($args[0]))
         {
             /**
              * @var Argument $arg
              */
-            $arg = $args[1];
+            $arg = $args[0];
 
             if ($arg->getType() < 200 && $arg->getType() > 300)
             {
@@ -93,23 +109,36 @@ class HashCommand extends Command
             return $in;
         }
 
-        throw new InvalidArgumentException('Value for hashing isn\'t specified');
+        throw new InvalidArgumentException('Value for encryption isn\'t specified');
     }
 
-    /**
-     * @inheritDoc
-     */
     public function handle(array $nextArgs): void
     {
         if ($this->available->isIndicated())
         {
-            Out::write(sprintf('Available hash algorithms: %s', implode(", ", hash_algos())));
+            Out::write(sprintf('Available algorithms: %s', implode(", ", openssl_get_cipher_methods())));
 
             return;
         }
 
+        $password = $this->getPassword();
+
         $data = $this->getData($nextArgs);
 
-        Out::write(hash($this->algorithm->getValue() . $this->salt->getValue(), $data, $this->binary->isIndicated()));
+        $algorithm = $this->algorithm->getValue();
+
+        if (!in_array($algorithm, openssl_get_cipher_methods()))
+        {
+            throw new AlgorithmException('Algorithm not supported');
+        }
+
+        $result = openssl_encrypt($data, $algorithm, $password);
+
+        if ($result === false)
+        {
+            throw new EncryptionException('Cannot encrypt given data');
+        }
+
+        Out::write($result);
     }
 }

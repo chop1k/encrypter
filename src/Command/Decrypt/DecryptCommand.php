@@ -1,6 +1,6 @@
 <?php
 
-namespace Encrypter\Command;
+namespace Encrypter\Command\Decrypt;
 
 use Consolly\Command\Command;
 use Encrypter\Option\FileOption;
