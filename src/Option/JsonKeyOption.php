@@ -4,7 +4,7 @@ namespace Encrypter\Option;
 
 use Consolly\Option\Option;
 
-class IVOption extends Option
+class JsonKeyOption extends Option
 {
 
     /**
@@ -12,7 +12,7 @@ class IVOption extends Option
      */
     public function getName(): string
     {
-        return 'iv';
+        return 'json-key';
     }
 
     /**
@@ -20,7 +20,7 @@ class IVOption extends Option
      */
     public function getAbbreviation(): ?string
     {
-        return 'i';
+        return 'k';
     }
 
     /**

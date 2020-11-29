@@ -15,8 +15,11 @@ use Encrypter\Option\AvailableAlgorithmOption;
 use Encrypter\Option\BinaryOption;
 use Encrypter\Option\FileOption;
 use Encrypter\Option\IVOption;
+use Encrypter\Option\JsonKeyOption;
 use Encrypter\Option\PasswordOption;
+use Exception;
 use InvalidArgumentException;
+use JsonException;
 
 class CryptoCommand extends Command
 {
@@ -32,6 +35,7 @@ class CryptoCommand extends Command
     protected AvailableAlgorithmOption $available;
     protected IVOption $iv;
     protected BinaryOption $binary;
+    protected JsonKeyOption $jsonKey;
 
     public function getOptions(): array
     {
@@ -41,7 +45,8 @@ class CryptoCommand extends Command
             $this->algorithm,
             $this->available,
             $this->iv,
-            $this->binary
+            $this->binary,
+            $this->jsonKey
         ];
     }
 
@@ -57,6 +62,7 @@ class CryptoCommand extends Command
         $this->available = new AvailableAlgorithmOption();
         $this->iv = new IVOption();
         $this->binary = new BinaryOption();
+        $this->jsonKey = new JsonKeyOption();
     }
 
     protected function getPassword(): string
@@ -70,11 +76,11 @@ class CryptoCommand extends Command
 
         if (is_null($password))
         {
-            $password = readline('Password:');
+            $password = readline('Password: ');
 
             if ($password === false)
             {
-                throw new \Exception("password is required");
+                throw new Exception("password is required");
             }
         }
 
@@ -84,6 +90,33 @@ class CryptoCommand extends Command
         }
 
         return $password;
+    }
+
+    protected function getIV(): string
+    {
+        $iv = null;
+
+        if ($this->iv->isIndicated())
+        {
+            $iv = $this->iv->getValue();
+        }
+
+        if (is_null($iv))
+        {
+            $iv = readline('IV: ');
+
+            if ($iv === false)
+            {
+                throw new Exception('IV is required');
+            }
+        }
+
+        if (is_null($iv))
+        {
+            throw new CommandException('IV not specified. Use -i for specifying iv');
+        }
+
+        return hash('md5', $iv, true);
     }
 
     protected function getData(array $args): string
@@ -99,7 +132,6 @@ class CryptoCommand extends Command
 
             return $data;
         }
-
 
         if (isset($args[0]))
         {
@@ -123,7 +155,7 @@ class CryptoCommand extends Command
             return $in;
         }
 
-        throw new InvalidArgumentException('Value for encryption isn\'t specified');
+        throw new InvalidArgumentException('Value isn\'t specified');
     }
 
     protected function getAlgosString(): string
@@ -155,6 +187,25 @@ class CryptoCommand extends Command
         if ($result === false)
         {
             throw new CryptoException(sprintf('Cannot %s given data', $decrypt ? 'decrypt' : 'encrypt'));
+        }
+
+        if ($this->jsonKey->isIndicated())
+        {
+            $json = json_decode($result);
+
+            $key = $this->jsonKey->getValue();
+
+            if (!isset($json->$key))
+            {
+                throw new JsonException(sprintf('Json not contains key "%s"', $key));
+            }
+
+            $result = $json->$key;
+
+            if (!is_string($result))
+            {
+                $result = json_encode($result);
+            }
         }
 
         return $result;

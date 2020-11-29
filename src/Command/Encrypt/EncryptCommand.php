@@ -23,7 +23,7 @@ class EncryptCommand extends CryptoCommand
                 $this->algorithm->getValue(),
                 $this->getData($nextArgs),
                 $this->getPassword(),
-                $this->iv->getValue(),
+                $this->getIV(),
                 $this->binary->isIndicated()
             )
         );

@@ -12,9 +12,9 @@
   "require": {
     "consolly/consolly": "dev-master",
     "consolly/io": "dev-master",
-    "ext-sodium": "*",
     "ext-readline": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
