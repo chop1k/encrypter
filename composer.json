@@ -1,7 +1,7 @@
 {
   "name": "chop1k/encrypter",
-  "description": "description",
-  "minimum-stability": "dev",
+  "description": "Console script that can encrypt / decrypt / hash any data.",
+  "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
     {
@@ -10,8 +10,8 @@
     }
   ],
   "require": {
-    "consolly/consolly": "dev-master",
-    "consolly/io": "dev-master",
+    "consolly/consolly": "1.0.0",
+    "consolly/io": "1.0.0",
     "ext-readline": "*",
     "ext-openssl": "*",
     "ext-json": "*"
