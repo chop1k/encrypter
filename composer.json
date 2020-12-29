@@ -2,6 +2,7 @@
   "name": "chop1k/encrypter",
   "description": "Console script that can encrypt / decrypt / hash any data.",
   "minimum-stability": "stable",
+  "type": "project",
   "license": "MIT",
   "authors": [
     {
@@ -10,6 +11,7 @@
     }
   ],
   "require": {
+    "php": "7.4",
     "consolly/consolly": "1.0.0",
     "consolly/io": "1.0.0",
     "ext-readline": "*",
