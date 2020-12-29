@@ -2,10 +2,14 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
 use Encrypter\Exception\FileUnattainableException;
 
-class FileOption extends Option
+/**
+ * Class FileOption specifies the file whose data will be used.
+ *
+ * @package Encrypter\Option
+ */
+class FileOption extends BaseOption
 {
     /**
      * @inheritDoc
@@ -25,63 +29,26 @@ class FileOption extends Option
 
     /**
      * @inheritDoc
-     */
-    public function isRequiresValue(): bool
-    {
-        return true;
-    }
-
-    private string $value;
-
-    /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * @inheritDoc
+     *
+     * @throws FileUnattainableException
      */
     public function setValue(string $value): void
     {
         if (!is_file($value))
         {
-            throw new FileUnattainableException("value of option '--file' isn't a path to file or file not found");
+            throw new FileUnattainableException("Value of option '--file' isn't a path to file or file not found.");
         }
 
         $this->value = $value;
     }
 
     /**
-     * @inheritDoc
+     * FileOption constructor.
      */
-    public function isRequired(): bool
-    {
-        return false;
-    }
-
-    private bool $indicated;
-
-    /**
-     * @return bool
-     */
-    public function isIndicated(): bool
-    {
-        return $this->indicated;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIndicated(bool $value): void
-    {
-        $this->indicated = $value;
-    }
-
     public function __construct()
     {
+        $this->required = false;
+        $this->requiresValue = true;
         $this->indicated = false;
         $this->value = false;
     }

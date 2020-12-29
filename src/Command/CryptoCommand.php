@@ -2,41 +2,81 @@
 
 namespace Encrypter\Command;
 
-use Consolly\Argument\Argument;
-use Consolly\Command\Command;
 use Consolly\Exception\CommandException;
-use Consolly\IO\Input\In;
+use Consolly\IO\Exception\OutException;
 use Consolly\IO\Output\Out;
 use Encrypter\Exception\AlgorithmException;
 use Encrypter\Exception\CryptoException;
-use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\AlgorithmOption;
 use Encrypter\Option\AvailableAlgorithmOption;
 use Encrypter\Option\BinaryOption;
-use Encrypter\Option\FileOption;
 use Encrypter\Option\IVOption;
 use Encrypter\Option\JsonKeyOption;
 use Encrypter\Option\PasswordOption;
 use Exception;
-use InvalidArgumentException;
 use JsonException;
 
-class CryptoCommand extends Command
+/**
+ * Class CryptoCommand represents base class for encryption/decryption commands.
+ *
+ * @package Encrypter\Command
+ */
+class CryptoCommand extends BaseCommand
 {
 
+    /**
+     * @inheritdoc
+     */
     public function getName(): string
     {
         return false;
     }
 
+    /**
+     * Password option.
+     *
+     * @var PasswordOption $password
+     */
     protected PasswordOption $password;
-    protected FileOption $file;
+
+    /**
+     * Required option that specifies encryption algorithm.
+     *
+     * @var AlgorithmOption $algorithm
+     */
     protected AlgorithmOption $algorithm;
+
+    /**
+     * If indicated returns list of all available algorithms.
+     *
+     * @var AvailableAlgorithmOption $available
+     */
     protected AvailableAlgorithmOption $available;
+
+    /**
+     * Option that specifies initial vector.
+     *
+     * @var IVOption $iv
+     */
     protected IVOption $iv;
+
+    /**
+     * Option that specifies in what form result will be displayed.
+     *
+     * @var BinaryOption $binary
+     */
     protected BinaryOption $binary;
+
+    /**
+     * JsonKey option.
+     *
+     * @var JsonKeyOption $jsonKey
+     */
     protected JsonKeyOption $jsonKey;
 
+    /**
+     * @inheritdoc
+     */
     public function getOptions(): array
     {
         return [
@@ -50,14 +90,18 @@ class CryptoCommand extends Command
         ];
     }
 
+    /**
+     * CryptoCommand constructor.
+     */
     public function __construct()
     {
+        parent::__construct();
+
         $this->password = new PasswordOption();
-        $this->file = new FileOption();
 
         $this->algorithm = new AlgorithmOption();
 
-        $this->algorithm->setRequired(false);
+        $this->algorithm->setRequired(true);
 
         $this->available = new AvailableAlgorithmOption();
         $this->iv = new IVOption();
@@ -65,6 +109,15 @@ class CryptoCommand extends Command
         $this->jsonKey = new JsonKeyOption();
     }
 
+    /**
+     * Returns password.
+     *
+     * @return string
+     *
+     * @throws CommandException
+     *
+     * @throws Exception
+     */
     protected function getPassword(): string
     {
         $password = null;
@@ -92,6 +145,15 @@ class CryptoCommand extends Command
         return $password;
     }
 
+    /**
+     * Returns initial vector.
+     *
+     * @return string
+     *
+     * @throws CommandException
+     *
+     * @throws Exception
+     */
     protected function getIV(): string
     {
         $iv = null;
@@ -119,65 +181,71 @@ class CryptoCommand extends Command
         return hash('md5', $iv, true);
     }
 
-    protected function getData(array $args): string
-    {
-        if ($this->file->isIndicated())
-        {
-            $data = file_get_contents($this->file->getValue());
-
-            if ($data === false)
-            {
-                throw new FileUnattainableException(sprintf('cannot read file "%s"', $this->file->getValue()));
-            }
-
-            return $data;
-        }
-
-        if (isset($args[0]))
-        {
-            /**
-             * @var Argument $arg
-             */
-            $arg = $args[0];
-
-            if ($arg->getType() < 200 && $arg->getType() > 300)
-            {
-                throw new InvalidArgumentException('First argument of hash command must be value type.');
-            }
-
-            return $arg->getValue();
-        }
-
-        $in = In::read();
-
-        if ($in != false)
-        {
-            return $in;
-        }
-
-        throw new InvalidArgumentException('Value isn\'t specified');
-    }
-
+    /**
+     * Returns string with available algorithms.
+     *
+     * @return string
+     */
     protected function getAlgosString(): string
     {
         return sprintf('Available algorithms: %s', implode(", ", openssl_get_cipher_methods()));
     }
 
+    /**
+     * @inheritdoc
+     *
+     * @param array $nextArgs
+     *
+     * @throws AlgorithmException
+     */
     public function handle(array $nextArgs): void
+    {
+        if (!in_array($this->algorithm->getValue(), openssl_get_cipher_methods()))
+        {
+            throw new AlgorithmException('Algorithm not supported.');
+        }
+    }
+
+    /**
+     * Writes algos string to stdout and returns true.
+     *
+     * @return bool
+     *
+     * @throws OutException
+     */
+    protected function writeAvailableAlgos(): bool
     {
         if ($this->available->isIndicated())
         {
             Out::write($this->getAlgosString());
 
-            return;
+            return true;
         }
 
-        if (!in_array($this->algorithm->getValue(), openssl_get_cipher_methods()))
-        {
-            throw new AlgorithmException('Algorithm not supported');
-        }
+        return false;
     }
 
+    /**
+     * Encrypts/decrypts given data and returns result.
+     *
+     * @param bool $decrypt
+     *
+     * @param string $algorithm
+     *
+     * @param string $data
+     *
+     * @param string $password
+     *
+     * @param string $iv
+     *
+     * @param bool $binary
+     *
+     * @return string
+     *
+     * @throws CryptoException
+     *
+     * @throws JsonException
+     */
     protected function crypt(bool $decrypt, string $algorithm, string $data, string $password, string $iv, bool $binary = false): string
     {
         $result = !$decrypt

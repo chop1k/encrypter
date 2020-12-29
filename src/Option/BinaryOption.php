@@ -2,9 +2,12 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
-
-class BinaryOption extends Option
+/**
+ * Class BinaryOption specifies in what form result will be displayed.
+ *
+ * @package Encrypter\Option
+ */
+class BinaryOption extends BaseOption
 {
 
     /**
@@ -24,49 +27,13 @@ class BinaryOption extends Option
     }
 
     /**
-     * @inheritDoc
+     * BinaryOption constructor.
      */
-    public function isRequiresValue(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setValue(string $value): void
-    {
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isRequired(): bool
-    {
-        return false;
-    }
-
-    private bool $indicated;
-
-    /**
-     * @return bool
-     */
-    public function isIndicated(): bool
-    {
-        return $this->indicated;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIndicated(bool $value): void
-    {
-        $this->indicated = $value;
-    }
-
     public function __construct()
     {
+        $this->required = false;
+        $this->requiresValue = false;
         $this->indicated = false;
+        $this->value = false;
     }
 }

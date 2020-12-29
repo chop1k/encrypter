@@ -2,19 +2,22 @@
 
 namespace Encrypter\Command\Hash;
 
-use Consolly\Argument\Argument;
-use Consolly\Command\Command;
-use Consolly\IO\Input\In;
+use Consolly\IO\Exception\InputException;
+use Consolly\IO\Exception\OutException;
 use Consolly\IO\Output\Out;
+use Encrypter\Command\BaseCommand;
 use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\AlgorithmOption;
 use Encrypter\Option\AvailableAlgorithmOption;
 use Encrypter\Option\BinaryOption;
-use Encrypter\Option\FileOption;
 use Encrypter\Option\SaltOption;
-use InvalidArgumentException;
 
-class HashCommand extends Command
+/**
+ * Class HashCommand represents hashing command.
+ *
+ * @package Encrypter\Command\Hash
+ */
+class HashCommand extends BaseCommand
 {
 
     /**
@@ -25,10 +28,32 @@ class HashCommand extends Command
         return "hash";
     }
 
+    /**
+     * Option that specifies encryption algorithm. Default value = sha256.
+     *
+     * @var AlgorithmOption $algorithm
+     */
     private AlgorithmOption $algorithm;
-    private FileOption $file;
+
+    /**
+     * Option that specifies in what form hash will be displayed. If indicated then the hash will be returned in binary.
+     *
+     * @var BinaryOption $binary
+     */
     private BinaryOption $binary;
+
+    /**
+     * Option that specifies salt. Salt is a text which adds to the main text.
+     *
+     * @var SaltOption $salt
+     */
     private SaltOption $salt;
+
+    /**
+     * Returns list of all available hashing algorithms.
+     *
+     * @var AvailableAlgorithmOption $available
+     */
     private AvailableAlgorithmOption $available;
 
     /**
@@ -45,59 +70,30 @@ class HashCommand extends Command
         ];
     }
 
+    /**
+     * HashCommand constructor.
+     */
     public function __construct()
     {
+        parent::__construct();
+
         $this->algorithm = new AlgorithmOption();
 
         $this->algorithm->setValue("sha256");
 
-        $this->file = new FileOption();
         $this->binary = new BinaryOption();
         $this->salt = new SaltOption();
         $this->available = new AvailableAlgorithmOption();
     }
 
-    private function getData(array $args): string
-    {
-        if ($this->file->isIndicated())
-        {
-            $data = file_get_contents($this->file->getValue());
-
-            if ($data === false)
-            {
-                throw new FileUnattainableException(sprintf('cannot read file "%s"', $this->file->getValue()));
-            }
-
-            return $data;
-        }
-
-        if (isset($args[0]))
-        {
-            /**
-             * @var Argument $arg
-             */
-            $arg = $args[0];
-
-            if ($arg->getType() < 200 && $arg->getType() > 300)
-            {
-                throw new InvalidArgumentException('First argument of hash command must be value type.');
-            }
-
-            return $arg->getValue();
-        }
-
-        $in = In::read();
-
-        if ($in != false)
-        {
-            return $in;
-        }
-
-        throw new InvalidArgumentException('Value for hashing isn\'t specified');
-    }
-
     /**
-     * @inheritDoc
+     * @inheritdoc
+     *
+     * @throws FileUnattainableException
+     *
+     * @throws InputException
+     *
+     * @throws OutException
      */
     public function handle(array $nextArgs): void
     {

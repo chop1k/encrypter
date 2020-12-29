@@ -2,11 +2,13 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
-
-class AvailableAlgorithmOption extends Option
+/**
+ * Class AvailableAlgorithmOption is a option which returns list of all available hashing algorithms.
+ *
+ * @package Encrypter\Option
+ */
+class AvailableAlgorithmOption extends BaseOption
 {
-
     /**
      * @inheritDoc
      */
@@ -24,48 +26,13 @@ class AvailableAlgorithmOption extends Option
     }
 
     /**
-     * @inheritDoc
+     * AvailableAlgorithmOption constructor.
      */
-    public function isRequiresValue(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setValue(string $value): void
-    {
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isRequired(): bool
-    {
-        return false;
-    }
-
-    protected bool $indicated;
-
-    /**
-     * @return bool
-     */
-    public function isIndicated(): bool
-    {
-        return $this->indicated;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIndicated(bool $value): void
-    {
-        $this->indicated = $value;
-    }
-
     public function __construct()
     {
+        $this->requiresValue = false;
+        $this->required = false;
         $this->indicated = false;
+        $this->value = false;
     }
 }

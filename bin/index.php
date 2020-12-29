@@ -2,7 +2,6 @@
 
 use Consolly\Consolly;
 use Encrypter\Command\Decrypt\DecryptCommand;
-use Encrypter\Command\DefaultCommand;
 use Encrypter\Command\Encrypt\EncryptCommand;
 use Encrypter\Command\Hash\HashCommand;
 
@@ -13,7 +12,5 @@ $consolly = new Consolly();
 $consolly->addCommand(new DecryptCommand());
 $consolly->addCommand(new EncryptCommand());
 $consolly->addCommand(new HashCommand());
-
-$consolly->setDefaultCommand(new DefaultCommand());
 
 $consolly->handle($argv);

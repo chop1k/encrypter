@@ -2,9 +2,12 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
-
-class IVOption extends Option
+/**
+ * Class IVOption is a option that specifies initial vector.
+ *
+ * @package Encrypter\Option
+ */
+class IVOption extends BaseOption
 {
 
     /**
@@ -24,59 +27,12 @@ class IVOption extends Option
     }
 
     /**
-     * @inheritDoc
+     * IVOption constructor.
      */
-    public function isRequiresValue(): bool
-    {
-        return true;
-    }
-
-    protected string $value;
-
-    /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setValue(string $value): void
-    {
-        $this->value = $value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isRequired(): bool
-    {
-        return false;
-    }
-
-    protected bool $indicated;
-
-    /**
-     * @return bool
-     */
-    public function isIndicated(): bool
-    {
-        return $this->indicated;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIndicated(bool $value): void
-    {
-        $this->indicated = $value;
-    }
-
     public function __construct()
     {
+        $this->requiresValue = true;
+        $this->required = false;
         $this->indicated = false;
         $this->value = false;
     }

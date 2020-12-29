@@ -2,11 +2,13 @@
 
 namespace Encrypter\Option;
 
-use Consolly\Option\Option;
-
-class PasswordOption extends Option
+/**
+ * Class PasswordOption is a option that specifies password for encryption.
+ *
+ * @package Encrypter\Option
+ */
+class PasswordOption extends BaseOption
 {
-
     /**
      * @inheritDoc
      */
@@ -24,59 +26,12 @@ class PasswordOption extends Option
     }
 
     /**
-     * @inheritDoc
+     * PasswordOption constructor.
      */
-    public function isRequiresValue(): bool
-    {
-        return true;
-    }
-
-    private string $value;
-
-    /**
-     * @return string
-     */
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setValue(string $value): void
-    {
-        $this->value = $value;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isRequired(): bool
-    {
-        return false;
-    }
-
-    private bool $indicated;
-
-    /**
-     * @return bool
-     */
-    public function isIndicated(): bool
-    {
-        return $this->indicated;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setIndicated(bool $value): void
-    {
-        $this->indicated = $value;
-    }
-
     public function __construct()
     {
+        $this->requiresValue = true;
+        $this->required = false;
         $this->indicated = false;
         $this->value = false;
     }
