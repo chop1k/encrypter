@@ -5,7 +5,6 @@ namespace Encrypter\Command\Decrypt;
 use Consolly\Exception\CommandException;
 use Consolly\IO\Exception\InputException;
 use Consolly\IO\Exception\OutException;
-use Consolly\IO\Output\Out;
 use Encrypter\Command\CryptoCommand;
 use Encrypter\Exception\AlgorithmException;
 use Encrypter\Exception\CryptoException;
@@ -53,7 +52,7 @@ class DecryptCommand extends CryptoCommand
 
         parent::handle($nextArgs);
 
-        Out::write(
+        $this->write(
             $this->crypt(
                 true,
                 $this->algorithm->getValue(),

@@ -5,9 +5,12 @@ namespace Encrypter\Command;
 use Consolly\Argument\Argument;
 use Consolly\Command\Command;
 use Consolly\IO\Exception\InputException;
+use Consolly\IO\Exception\OutException;
 use Consolly\IO\Input\In;
+use Consolly\IO\Output\Out;
 use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\FileOption;
+use Encrypter\Option\OutputFile;
 use InvalidArgumentException;
 
 /**
@@ -33,6 +36,13 @@ class BaseCommand extends Command
     protected FileOption $file;
 
     /**
+     * OutputFile option. Specifies the file to which the data will be written.
+     *
+     * @var OutputFile $output
+     */
+    protected OutputFile $output;
+
+    /**
      * @inheritDoc
      */
     public function getOptions(): array
@@ -40,9 +50,13 @@ class BaseCommand extends Command
         return [];
     }
 
+    /**
+     * BaseCommand constructor.
+     */
     public function __construct()
     {
         $this->file = new FileOption();
+        $this->output = new OutputFile();
     }
 
     /**
@@ -100,5 +114,31 @@ class BaseCommand extends Command
         }
 
         throw new InvalidArgumentException('Value isn`t specified.');
+    }
+
+    /**
+     * Shortcut for writing data to the file if specified, to the stdout otherwise.
+     *
+     * @param string $data
+     *
+     * @throws FileUnattainableException
+     *
+     * @throws OutException
+     */
+    protected function write(string $data): void
+    {
+        if ($this->output->isIndicated())
+        {
+            $result = file_put_contents($this->output->getValue(), $data);
+
+            if ($result === false)
+            {
+                throw new FileUnattainableException(sprintf('Cannot write to the file "%s".', $this->file->getValue()));
+            }
+        }
+        else
+        {
+            Out::write($data);
+        }
     }
 }

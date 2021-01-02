@@ -64,6 +64,7 @@ class HashCommand extends BaseCommand
         return [
             $this->algorithm,
             $this->file,
+            $this->output,
             $this->binary,
             $this->salt,
             $this->available
@@ -100,12 +101,14 @@ class HashCommand extends BaseCommand
         if ($this->available->isIndicated())
         {
             Out::write(sprintf('Available hash algorithms: %s', implode(", ", hash_algos())));
-
-            return;
         }
+        else
+        {
+            $data = $this->getData($nextArgs);
 
-        $data = $this->getData($nextArgs);
-
-        Out::write(hash($this->algorithm->getValue() . $this->salt->getValue(), $data, $this->binary->isIndicated()));
+            $this->write(
+                hash($this->algorithm->getValue() . $this->salt->getValue(), $data, $this->binary->isIndicated())
+            );
+        }
     }
 }

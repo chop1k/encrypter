@@ -26,6 +26,7 @@ Then you can use shell wrapper.
  * hash - hashes given data and returns result to the stdout.
     * -a or --algorithm - required option that specifies hash algorithm, default value - sha256.
     * -f or --file - option that specifies the file whose data will be used for hashing.
+    * -O or --output-file - option that specifies the file to which the data will be written.
     * -b or --binary - option that specifies in what form hash will be displayed. If indicated then the hash will be returned in binary.
     * -s or --salt - option that specifies salt. Salt is a text which adds to the main text.
     * -A or --available - returns list of all available hashing algorithms.
@@ -34,6 +35,7 @@ Then you can use shell wrapper.
     * -p or --password - option that specifies password for encryption.
     * -i or --iv - option that specifies initial vector.
     * -f or --file - option that specifies the file whose data will be used for encryption. 
+    * -O or --output-file - option that specifies the file to which the data will be written.
     * -A or --available - returns list of all available algorithms.
     * -b or --binary - option that specifies in what form result will be displayed. If indicated then the result will be returned in binary.
  * decrypt - decrypts given data and returns result to the stdout.
@@ -41,6 +43,7 @@ Then you can use shell wrapper.
     * -p or --password - option that specifies password for decryption.
     * -i or --iv - option that specifies initial vector.
     * -f or --file - option that specifies the file whose data will be used for decryption.
+    * -O or --output-file - option that specifies the file to which the data will be written.
     * -A or --available - returns list of all available algorithms.
     * -b or --binary - option that specifies in what form result will be displayed. If indicated then the result will be returned in binary.
 

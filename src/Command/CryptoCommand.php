@@ -82,6 +82,7 @@ class CryptoCommand extends BaseCommand
         return [
             $this->password,
             $this->file,
+            $this->output,
             $this->algorithm,
             $this->available,
             $this->iv,
