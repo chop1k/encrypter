@@ -34,8 +34,7 @@ class FileOption extends BaseOption
      */
     public function setValue(string $value): void
     {
-        if (!is_file($value))
-        {
+        if (!is_file($value)) {
             throw new FileUnattainableException("Value of option '--file' isn't a path to file or file not found.");
         }
 

@@ -5,9 +5,7 @@ namespace Encrypter\Command;
 use Consolly\Argument\Argument;
 use Consolly\Command\Command;
 use Consolly\IO\Exception\InputException;
-use Consolly\IO\Exception\OutException;
 use Consolly\IO\Input\In;
-use Consolly\IO\Output\Out;
 use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\FileOption;
 use Encrypter\Option\OutputFile;
@@ -79,27 +77,23 @@ class BaseCommand extends Command
      */
     protected function getData(array $args): string
     {
-        if ($this->file->isIndicated())
-        {
+        if ($this->file->isIndicated()) {
             $data = file_get_contents($this->file->getValue());
 
-            if ($data === false)
-            {
+            if ($data === false) {
                 throw new FileUnattainableException(sprintf('Cannot read file "%s".', $this->file->getValue()));
             }
 
             return $data;
         }
 
-        if (isset($args[0]))
-        {
+        if (isset($args[0])) {
             /**
              * @var Argument $arg
              */
             $arg = $args[0];
 
-            if ($arg->getType() < 200 && $arg->getType() > 300)
-            {
+            if ($arg->getType() < 200 && $arg->getType() > 300) {
                 throw new InvalidArgumentException('First argument of hash command must be value type.');
             }
 
@@ -108,37 +102,10 @@ class BaseCommand extends Command
 
         $in = In::read();
 
-        if ($in != false)
-        {
+        if ($in != false) {
             return $in;
         }
 
         throw new InvalidArgumentException('Value isn`t specified.');
-    }
-
-    /**
-     * Shortcut for writing data to the file if specified, to the stdout otherwise.
-     *
-     * @param string $data
-     *
-     * @throws FileUnattainableException
-     *
-     * @throws OutException
-     */
-    protected function write(string $data): void
-    {
-        if ($this->output->isIndicated())
-        {
-            $result = file_put_contents($this->output->getValue(), $data);
-
-            if ($result === false)
-            {
-                throw new FileUnattainableException(sprintf('Cannot write to the file "%s".', $this->file->getValue()));
-            }
-        }
-        else
-        {
-            Out::write($data);
-        }
     }
 }

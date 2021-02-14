@@ -7,6 +7,7 @@ use Consolly\IO\Exception\OutException;
 use Consolly\IO\Output\Out;
 use Encrypter\Exception\AlgorithmException;
 use Encrypter\Exception\CryptoException;
+use Encrypter\Exception\FileUnattainableException;
 use Encrypter\Option\AlgorithmOption;
 use Encrypter\Option\AvailableAlgorithmOption;
 use Encrypter\Option\BinaryOption;
@@ -14,7 +15,6 @@ use Encrypter\Option\IVOption;
 use Encrypter\Option\JsonKeyOption;
 use Encrypter\Option\PasswordOption;
 use Exception;
-use JsonException;
 
 /**
  * Class CryptoCommand represents base class for encryption/decryption commands.
@@ -123,23 +123,19 @@ class CryptoCommand extends BaseCommand
     {
         $password = null;
 
-        if ($this->password->isIndicated())
-        {
+        if ($this->password->isIndicated()) {
             $password = $this->password->getValue();
         }
 
-        if (is_null($password))
-        {
+        if (is_null($password)) {
             $password = readline('Password: ');
 
-            if ($password === false)
-            {
+            if ($password === false) {
                 throw new Exception("password is required");
             }
         }
 
-        if (is_null($password))
-        {
+        if (is_null($password)) {
             throw new CommandException('Password not specified. Use -p for specifying password');
         }
 
@@ -159,23 +155,19 @@ class CryptoCommand extends BaseCommand
     {
         $iv = null;
 
-        if ($this->iv->isIndicated())
-        {
+        if ($this->iv->isIndicated()) {
             $iv = $this->iv->getValue();
         }
 
-        if (is_null($iv))
-        {
+        if (is_null($iv)) {
             $iv = readline('IV: ');
 
-            if ($iv === false)
-            {
+            if ($iv === false) {
                 throw new Exception('IV is required');
             }
         }
 
-        if (is_null($iv))
-        {
+        if (is_null($iv)) {
             throw new CommandException('IV not specified. Use -i for specifying iv');
         }
 
@@ -201,8 +193,7 @@ class CryptoCommand extends BaseCommand
      */
     public function handle(array $nextArgs): void
     {
-        if (!in_array($this->algorithm->getValue(), openssl_get_cipher_methods()))
-        {
+        if (!in_array($this->algorithm->getValue(), openssl_get_cipher_methods())) {
             throw new AlgorithmException('Algorithm not supported.');
         }
     }
@@ -216,14 +207,35 @@ class CryptoCommand extends BaseCommand
      */
     protected function writeAvailableAlgos(): bool
     {
-        if ($this->available->isIndicated())
-        {
+        if ($this->available->isIndicated()) {
             Out::write($this->getAlgosString());
 
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Shortcut for writing data to the file if specified, to the stdout otherwise.
+     *
+     * @param string $data
+     *
+     * @throws FileUnattainableException
+     *
+     * @throws OutException
+     */
+    protected function write(string $data): void
+    {
+        if ($this->output->isIndicated()) {
+            $result = file_put_contents($this->output->getValue(), $data);
+
+            if ($result === false) {
+                throw new FileUnattainableException(sprintf('Cannot write to the file "%s".', $this->file->getValue()));
+            }
+        } else {
+            Out::write($data);
+        }
     }
 
     /**
@@ -245,36 +257,21 @@ class CryptoCommand extends BaseCommand
      *
      * @throws CryptoException
      *
-     * @throws JsonException
      */
-    protected function crypt(bool $decrypt, string $algorithm, string $data, string $password, string $iv, bool $binary = false): string
-    {
+    protected function crypt(
+        bool $decrypt,
+        string $algorithm,
+        string $data,
+        string $password,
+        string $iv,
+        bool $binary = false
+    ): string {
         $result = !$decrypt
             ? openssl_encrypt($data, $algorithm, $password, $binary ? OPENSSL_RAW_DATA : 0, $iv)
             : openssl_decrypt($data, $algorithm, $password, $binary ? OPENSSL_RAW_DATA : 0, $iv);
 
-        if ($result === false)
-        {
+        if ($result === false) {
             throw new CryptoException(sprintf('Cannot %s given data', $decrypt ? 'decrypt' : 'encrypt'));
-        }
-
-        if ($this->jsonKey->isIndicated())
-        {
-            $json = json_decode($result);
-
-            $key = $this->jsonKey->getValue();
-
-            if (!isset($json->$key))
-            {
-                throw new JsonException(sprintf('Json not contains key "%s"', $key));
-            }
-
-            $result = $json->$key;
-
-            if (!is_string($result))
-            {
-                $result = json_encode($result);
-            }
         }
 
         return $result;

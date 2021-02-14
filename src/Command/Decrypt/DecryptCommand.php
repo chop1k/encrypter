@@ -9,7 +9,6 @@ use Encrypter\Command\CryptoCommand;
 use Encrypter\Exception\AlgorithmException;
 use Encrypter\Exception\CryptoException;
 use Encrypter\Exception\FileUnattainableException;
-use JsonException;
 
 /**
  * Class DecryptCommand represents decrypt command.
@@ -41,12 +40,10 @@ class DecryptCommand extends CryptoCommand
      *
      * @throws FileUnattainableException
      *
-     * @throws JsonException
      */
     public function handle(array $nextArgs): void
     {
-        if ($this->writeAvailableAlgos())
-        {
+        if ($this->writeAvailableAlgos()) {
             return;
         }
 

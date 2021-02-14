@@ -98,15 +98,12 @@ class HashCommand extends BaseCommand
      */
     public function handle(array $nextArgs): void
     {
-        if ($this->available->isIndicated())
-        {
+        if ($this->available->isIndicated()) {
             Out::write(sprintf('Available hash algorithms: %s', implode(", ", hash_algos())));
-        }
-        else
-        {
+        } else {
             $data = $this->getData($nextArgs);
 
-            $this->write(
+            Out::write(
                 hash($this->algorithm->getValue() . $this->salt->getValue(), $data, $this->binary->isIndicated())
             );
         }
