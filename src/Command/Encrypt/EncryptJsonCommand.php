@@ -79,16 +79,18 @@ class EncryptJsonCommand extends EncryptCommand
      */
     public function handle(array $nextArgs): void
     {
-        $iv = $this->getIV();
         $password = $this->getPassword();
+        $iv = $this->getIV();
+        $algorithm = $this->algorithm->getValue();
+        $binary = $this->binary->isIndicated();
 
         $json = json_decode($this->crypt(
             true,
-            $this->algorithm->getValue(),
+            $algorithm,
             $this->getData($nextArgs),
             $password,
             $iv,
-            $this->binary->isIndicated()
+            $binary
         ), true);
 
         if (is_null($json)) {
@@ -106,11 +108,11 @@ class EncryptJsonCommand extends EncryptCommand
         $this->write(
             $this->crypt(
                 false,
-                $this->algorithm->getValue(),
+                $algorithm,
                 json_encode($json),
                 $password,
                 $iv,
-                $this->binary->isIndicated()
+                $binary
             )
         );
     }
