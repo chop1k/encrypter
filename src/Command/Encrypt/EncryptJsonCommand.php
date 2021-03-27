@@ -24,15 +24,9 @@ class EncryptJsonCommand extends EncryptCommand
     {
         parent::__construct();
 
-        $this->jsonKey->setRequired(true);
-    }
+        $this->name = 'encrypt-json';
 
-    /**
-     * @inheritdoc
-     */
-    public function getName(): string
-    {
-        return 'encrypt-json';
+        $this->jsonKey->setRequired(true);
     }
 
     /**
@@ -49,7 +43,7 @@ class EncryptJsonCommand extends EncryptCommand
         $value = readline('Key value: ');
 
         if ($value === false) {
-            throw new Exception('Key value not specified.');
+            throw new Exception('Key value not specified. ');
         }
 
         return [
@@ -79,20 +73,22 @@ class EncryptJsonCommand extends EncryptCommand
      */
     public function handle(array $nextArgs): void
     {
-        $iv = $this->getIV();
         $password = $this->getPassword();
+        $iv = $this->getIV();
+        $algorithm = $this->algorithm->getValue();
+        $binary = $this->binary->isIndicated();
 
         $json = json_decode($this->crypt(
             true,
-            $this->algorithm->getValue(),
+            $algorithm,
             $this->getData($nextArgs),
             $password,
             $iv,
-            $this->binary->isIndicated()
+            $binary
         ), true);
 
         if (is_null($json)) {
-            throw new JsonException('Cannot parse given data.');
+            throw new JsonException('Cannot parse given data. ');
         }
 
         [ $name, $value ] = $this->getKey();
@@ -106,11 +102,11 @@ class EncryptJsonCommand extends EncryptCommand
         $this->write(
             $this->crypt(
                 false,
-                $this->algorithm->getValue(),
+                $algorithm,
                 json_encode($json),
                 $password,
                 $iv,
-                $this->binary->isIndicated()
+                $binary
             )
         );
     }

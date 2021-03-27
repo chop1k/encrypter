@@ -19,15 +19,6 @@ use Encrypter\Option\SaltOption;
  */
 class HashCommand extends BaseCommand
 {
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return "hash";
-    }
-
     /**
      * Option that specifies encryption algorithm. Default value = sha256.
      *
@@ -57,26 +48,13 @@ class HashCommand extends BaseCommand
     private AvailableAlgorithmOption $available;
 
     /**
-     * @inheritDoc
-     */
-    public function getOptions(): array
-    {
-        return [
-            $this->algorithm,
-            $this->file,
-            $this->output,
-            $this->binary,
-            $this->salt,
-            $this->available
-        ];
-    }
-
-    /**
      * HashCommand constructor.
      */
     public function __construct()
     {
         parent::__construct();
+
+        $this->name = 'hash';
 
         $this->algorithm = new AlgorithmOption();
 
@@ -85,6 +63,15 @@ class HashCommand extends BaseCommand
         $this->binary = new BinaryOption();
         $this->salt = new SaltOption();
         $this->available = new AvailableAlgorithmOption();
+
+        $this->options = [
+            $this->algorithm,
+            $this->file,
+            $this->output,
+            $this->binary,
+            $this->salt,
+            $this->available
+        ];
     }
 
     /**
@@ -99,11 +86,11 @@ class HashCommand extends BaseCommand
     public function handle(array $nextArgs): void
     {
         if ($this->available->isIndicated()) {
-            Out::write(sprintf('Available hash algorithms: %s', implode(", ", hash_algos())));
+            Out::log(sprintf('Available hash algorithms: %s. ', implode(", ", hash_algos())));
         } else {
             $data = $this->getData($nextArgs);
 
-            Out::write(
+            Out::log(
                 hash($this->algorithm->getValue() . $this->salt->getValue(), $data, $this->binary->isIndicated())
             );
         }

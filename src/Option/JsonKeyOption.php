@@ -2,35 +2,22 @@
 
 namespace Encrypter\Option;
 
+use Consolly\Option\Option;
+
 /**
  * Class JsonKeyOption is a JsonKey option.
  *
  * @package Encrypter\Option
  */
-class JsonKeyOption extends BaseOption
+class JsonKeyOption extends Option
 {
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return 'json-key';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAbbreviation(): ?string
-    {
-        return 'k';
-    }
-
     /**
      * JsonKeyOption constructor.
      */
     public function __construct()
     {
+        $this->name = 'json-key';
+        $this->abbreviation = 'k';
         $this->requiresValue = true;
         $this->required = false;
         $this->indicated = false;

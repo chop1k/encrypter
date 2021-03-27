@@ -2,34 +2,22 @@
 
 namespace Encrypter\Option;
 
+use Consolly\Option\Option;
+
 /**
  * Class OutputFile specifies the file to which the data will be written.
  *
  * @package Encrypter\Option
  */
-class OutputFile extends BaseOption
+class OutputFile extends Option
 {
-    /**
-     * @inheritdoc
-     */
-    public function getName(): string
-    {
-        return 'output-file';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAbbreviation(): ?string
-    {
-        return 'O';
-    }
-
     /**
      * OutputFile constructor.
      */
     public function __construct()
     {
+        $this->name = 'output-file';
+        $this->abbreviation = 'O';
         $this->required = false;
         $this->requiresValue = true;
         $this->value = false;

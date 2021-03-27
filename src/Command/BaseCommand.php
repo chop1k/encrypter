@@ -2,8 +2,8 @@
 
 namespace Encrypter\Command;
 
-use Consolly\Argument\Argument;
 use Consolly\Command\Command;
+use Consolly\Helper\Argument;
 use Consolly\IO\Exception\InputException;
 use Consolly\IO\Input\In;
 use Encrypter\Exception\FileUnattainableException;
@@ -19,14 +19,6 @@ use InvalidArgumentException;
 class BaseCommand extends Command
 {
     /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return false;
-    }
-
-    /**
      * File option. Specifies the file whose data will be used.
      *
      * @var FileOption $file
@@ -41,18 +33,14 @@ class BaseCommand extends Command
     protected OutputFile $output;
 
     /**
-     * @inheritDoc
-     */
-    public function getOptions(): array
-    {
-        return [];
-    }
-
-    /**
      * BaseCommand constructor.
      */
     public function __construct()
     {
+        $this->name = false;
+
+        $this->options = [];
+
         $this->file = new FileOption();
         $this->output = new OutputFile();
     }
@@ -81,23 +69,24 @@ class BaseCommand extends Command
             $data = file_get_contents($this->file->getValue());
 
             if ($data === false) {
-                throw new FileUnattainableException(sprintf('Cannot read file "%s".', $this->file->getValue()));
+                throw new FileUnattainableException(sprintf('Cannot read file "%s". ', $this->file->getValue()));
             }
 
             return $data;
         }
 
         if (isset($args[0])) {
-            /**
-             * @var Argument $arg
-             */
             $arg = $args[0];
 
-            if ($arg->getType() < 200 && $arg->getType() > 300) {
-                throw new InvalidArgumentException('First argument of hash command must be value type.');
+            if (Argument::isValue($arg)) {
+                return Argument::toValue($arg);
             }
 
-            return $arg->getValue();
+            if (Argument::isPureValue($arg)) {
+                return Argument::toPureValue($arg);
+            }
+
+            throw new InvalidArgumentException('First argument of the hash command must be a value type. ');
         }
 
         $in = In::read();
@@ -106,6 +95,6 @@ class BaseCommand extends Command
             return $in;
         }
 
-        throw new InvalidArgumentException('Value isn`t specified.');
+        throw new InvalidArgumentException('Value isn`t specified. ');
     }
 }

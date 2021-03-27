@@ -2,35 +2,22 @@
 
 namespace Encrypter\Option;
 
+use Consolly\Option\Option;
+
 /**
  * Class AlgorithmOption is a option that specifies algorithm.
  *
  * @package Encrypter\Option
  */
-class AlgorithmOption extends BaseOption
+class AlgorithmOption extends Option
 {
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return "algorithm";
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAbbreviation(): ?string
-    {
-        return "a";
-    }
-
     /**
      * AlgorithmOption constructor.
      */
     public function __construct()
     {
+        $this->name = 'algorithm';
+        $this->abbreviation = 'a';
         $this->requiresValue = true;
         $this->required = false;
         $this->indicated = false;

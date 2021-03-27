@@ -2,34 +2,22 @@
 
 namespace Encrypter\Option;
 
+use Consolly\Option\Option;
+
 /**
  * Class AvailableAlgorithmOption is a option which returns list of all available hashing algorithms.
  *
  * @package Encrypter\Option
  */
-class AvailableAlgorithmOption extends BaseOption
+class AvailableAlgorithmOption extends Option
 {
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return 'available';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAbbreviation(): ?string
-    {
-        return 'A';
-    }
-
     /**
      * AvailableAlgorithmOption constructor.
      */
     public function __construct()
     {
+        $this->name = 'available';
+        $this->abbreviation = 'A';
         $this->requiresValue = false;
         $this->required = false;
         $this->indicated = false;

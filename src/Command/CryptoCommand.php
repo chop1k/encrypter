@@ -23,15 +23,6 @@ use Exception;
  */
 class CryptoCommand extends BaseCommand
 {
-
-    /**
-     * @inheritdoc
-     */
-    public function getName(): string
-    {
-        return false;
-    }
-
     /**
      * Password option.
      *
@@ -75,28 +66,13 @@ class CryptoCommand extends BaseCommand
     protected JsonKeyOption $jsonKey;
 
     /**
-     * @inheritdoc
-     */
-    public function getOptions(): array
-    {
-        return [
-            $this->password,
-            $this->file,
-            $this->output,
-            $this->algorithm,
-            $this->available,
-            $this->iv,
-            $this->binary,
-            $this->jsonKey
-        ];
-    }
-
-    /**
      * CryptoCommand constructor.
      */
     public function __construct()
     {
         parent::__construct();
+
+        $this->name = false;
 
         $this->password = new PasswordOption();
 
@@ -108,6 +84,17 @@ class CryptoCommand extends BaseCommand
         $this->iv = new IVOption();
         $this->binary = new BinaryOption();
         $this->jsonKey = new JsonKeyOption();
+
+        $this->options = [
+            $this->password,
+            $this->file,
+            $this->output,
+            $this->algorithm,
+            $this->available,
+            $this->iv,
+            $this->binary,
+            $this->jsonKey
+        ];
     }
 
     /**
@@ -131,12 +118,12 @@ class CryptoCommand extends BaseCommand
             $password = readline('Password: ');
 
             if ($password === false) {
-                throw new Exception("password is required");
+                throw new Exception("Password is required. ");
             }
         }
 
         if (is_null($password)) {
-            throw new CommandException('Password not specified. Use -p for specifying password');
+            throw new CommandException('Password not specified. Use -p for specifying password. ');
         }
 
         return $password;
@@ -163,12 +150,12 @@ class CryptoCommand extends BaseCommand
             $iv = readline('IV: ');
 
             if ($iv === false) {
-                throw new Exception('IV is required');
+                throw new Exception('IV is required. ');
             }
         }
 
         if (is_null($iv)) {
-            throw new CommandException('IV not specified. Use -i for specifying iv');
+            throw new CommandException('IV not specified. Use -i for specifying iv. ');
         }
 
         return hash('md5', $iv, true);
@@ -181,7 +168,7 @@ class CryptoCommand extends BaseCommand
      */
     protected function getAlgosString(): string
     {
-        return sprintf('Available algorithms: %s', implode(", ", openssl_get_cipher_methods()));
+        return sprintf('Available algorithms: %s. ', implode(", ", openssl_get_cipher_methods()));
     }
 
     /**
@@ -194,7 +181,7 @@ class CryptoCommand extends BaseCommand
     public function handle(array $nextArgs): void
     {
         if (!in_array($this->algorithm->getValue(), openssl_get_cipher_methods())) {
-            throw new AlgorithmException('Algorithm not supported.');
+            throw new AlgorithmException('Algorithm not supported. ');
         }
     }
 
@@ -208,7 +195,7 @@ class CryptoCommand extends BaseCommand
     protected function writeAvailableAlgos(): bool
     {
         if ($this->available->isIndicated()) {
-            Out::write($this->getAlgosString());
+            Out::log($this->getAlgosString());
 
             return true;
         }
@@ -231,10 +218,12 @@ class CryptoCommand extends BaseCommand
             $result = file_put_contents($this->output->getValue(), $data);
 
             if ($result === false) {
-                throw new FileUnattainableException(sprintf('Cannot write to the file "%s".', $this->file->getValue()));
+                throw new FileUnattainableException(
+                    sprintf('Cannot write to the file "%s". ', $this->file->getValue())
+                );
             }
         } else {
-            Out::write($data);
+            Out::log($data);
         }
     }
 
@@ -271,7 +260,7 @@ class CryptoCommand extends BaseCommand
             : openssl_decrypt($data, $algorithm, $password, $binary ? OPENSSL_RAW_DATA : 0, $iv);
 
         if ($result === false) {
-            throw new CryptoException(sprintf('Cannot %s given data', $decrypt ? 'decrypt' : 'encrypt'));
+            throw new CryptoException(sprintf('Cannot %s given data. ', $decrypt ? 'decrypt' : 'encrypt'));
         }
 
         return $result;

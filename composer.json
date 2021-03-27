@@ -12,7 +12,7 @@
   ],
   "require": {
     "php": "^7.4",
-    "consolly/consolly": "1.0.0",
+    "consolly/consolly": "v2.1.0",
     "consolly/io": "1.0.0",
     "ext-readline": "*",
     "ext-openssl": "*",

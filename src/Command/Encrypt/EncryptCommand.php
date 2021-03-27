@@ -17,13 +17,14 @@ use Encrypter\Exception\FileUnattainableException;
  */
 class EncryptCommand extends CryptoCommand
 {
-
     /**
-     * @inheritdoc
+     * EncryptCommand constructor.
      */
-    public function getName(): string
+    public function __construct()
     {
-        return 'encrypt';
+        parent::__construct();
+
+        $this->name = 'encrypt';
     }
 
     /**

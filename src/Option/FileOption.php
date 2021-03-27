@@ -2,6 +2,7 @@
 
 namespace Encrypter\Option;
 
+use Consolly\Option\Option;
 use Encrypter\Exception\FileUnattainableException;
 
 /**
@@ -9,30 +10,14 @@ use Encrypter\Exception\FileUnattainableException;
  *
  * @package Encrypter\Option
  */
-class FileOption extends BaseOption
+class FileOption extends Option
 {
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return 'file';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAbbreviation(): ?string
-    {
-        return 'f';
-    }
-
     /**
      * @inheritDoc
      *
      * @throws FileUnattainableException
      */
-    public function setValue(string $value): void
+    public function setValue($value): void
     {
         if (!is_file($value)) {
             throw new FileUnattainableException("Value of option '--file' isn't a path to file or file not found.");
@@ -46,6 +31,8 @@ class FileOption extends BaseOption
      */
     public function __construct()
     {
+        $this->name = 'file';
+        $this->abbreviation = 'f';
         $this->required = false;
         $this->requiresValue = true;
         $this->indicated = false;

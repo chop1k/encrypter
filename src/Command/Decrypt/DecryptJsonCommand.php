@@ -23,15 +23,9 @@ class DecryptJsonCommand extends DecryptCommand
     {
         parent::__construct();
 
-        $this->jsonKey->setRequired(true);
-    }
+        $this->name = 'decrypt-json';
 
-    /**
-     * @inheritdoc
-     */
-    public function getName(): string
-    {
-        return 'decrypt-json';
+        $this->jsonKey->setRequired(true);
     }
 
     /**
@@ -64,13 +58,13 @@ class DecryptJsonCommand extends DecryptCommand
         ), true);
 
         if (is_null($json)) {
-            throw new JsonException('Cannot parse given data.');
+            throw new JsonException('Cannot parse given data. ');
         }
 
         $key = $this->jsonKey->getValue();
 
         if (!isset($json[$key])) {
-            throw new JsonException(sprintf('Json does not contains key "%s"', $key));
+            throw new JsonException(sprintf('Json does not contains key "%s". ', $key));
         }
 
         $this->write($json[$key]);

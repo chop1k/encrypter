@@ -9,7 +9,9 @@ use Encrypter\Command\Hash\HashCommand;
 
 require dirname(__DIR__) . "/vendor/autoload.php";
 
-$consolly = new Consolly();
+array_shift($argv);
+
+$consolly = Consolly::default($argv);
 
 $consolly->addCommand(new DecryptJsonCommand());
 $consolly->addCommand(new EncryptJsonCommand());
@@ -17,4 +19,4 @@ $consolly->addCommand(new DecryptCommand());
 $consolly->addCommand(new EncryptCommand());
 $consolly->addCommand(new HashCommand());
 
-$consolly->handle($argv);
+$consolly->handle();
